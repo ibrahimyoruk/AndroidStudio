@@ -19,6 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "MyTagram"
+rootProject.name = "browser"
 include(":app")
- 
