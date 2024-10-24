@@ -3,33 +3,54 @@ package gui.ceng.mu.edu.browser;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.widget.Toolbar;
+import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.activity.EdgeToEdge;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-
+import gui.ceng.mu.edu.browser.R;
 
 public class MainActivity extends AppCompatActivity {
+
+    Button btnGo;
+    EditText txtAddress;
+    WebView webView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        btnGo = findViewById(R.id.go);
+        txtAddress = findViewById(R.id.adress);
+        webView = findViewById(R.id.webview);
+
+        webView.setWebViewClient(new WebViewClient());
+
+        btnGo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                webView.loadUrl("http://"+ txtAddress.getText());
+            }
+        });
+        if (getIntent() !=null && getIntent().getData() != null) {
+            txtAddress.setText(getIntent().getData().toString());
+            webView.loadUrl(getIntent().getData().toString());
+        }
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 }
