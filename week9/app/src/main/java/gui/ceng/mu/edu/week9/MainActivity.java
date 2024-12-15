@@ -1,21 +1,26 @@
 package gui.ceng.mu.edu.week9;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -24,131 +29,127 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
-public class MainActivity extends AppCompatActivity {
-    EditText txtUrl;
-    Button btnDownload;
-    ImageView imgView;
 
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static final String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+
+public class MainActivity extends AppCompatActivity {
+
+    EditText txturl;
+    ImageView imageView;
+    Button button;
+    private static int REQUEST_EXTERNAL_STORAGE=1;
+    private static String[] PERMISSSON_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         setContentView(R.layout.activity_main);
 
-        // Initialize UI components
-        txtUrl = findViewById(R.id.txtURL);
-        btnDownload = findViewById(R.id.btnDownload);
-        imgView = findViewById(R.id.imgView);
+        imageView = findViewById(R.id.imgView);
+        button = findViewById(R.id.btnDownload);
+        txturl = findViewById(R.id.txtURL);
 
-        btnDownload.setOnClickListener(new View.OnClickListener() {
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int permission = ActivityCompat.checkSelfPermission(
-                        MainActivity.this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                );
-
-                if (permission != PackageManager.PERMISSION_GRANTED) {
-                    // İzin yoksa, kullanıcıdan izin iste
-                    ActivityCompat.requestPermissions(
-                            MainActivity.this,
-                            PERMISSIONS_STORAGE,
-                            REQUEST_EXTERNAL_STORAGE
-                    );
-                } else {
-                    // İzin varsa, indirme işlemini başlat
-                    String url = txtUrl.getText().toString();
-                    new DownloadTask().execute(url);
+                int permisssion = ActivityCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                if (permisssion != PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this, PERMISSSON_STORAGE , REQUEST_EXTERNAL_STORAGE);
                 }
+                String fileName = "temp.jpg";
+                String imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/"+fileName;
+                downloadFile(txturl.getText().toString(),imagePath);
+                preview(imagePath);
             }
         });
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_EXTERNAL_STORAGE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Kullanıcı izin verdiyse indirme başlat
-                Toast.makeText(this, "Permission granted!", Toast.LENGTH_SHORT).show();
-                String url = txtUrl.getText().toString();
-                new DownloadTask().execute(url);
-            } else {
-                // Kullanıcı izin vermediyse hata mesajı göster
-                Toast.makeText(this, "Permission denied! Cannot download image.", Toast.LENGTH_SHORT).show();
-            }
+        if (grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED&& grantResults[1]==PackageManager.PERMISSION_GRANTED){
+            String fileName = "temp.jpg";
+            String imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()+"/"+fileName;
+            downloadFile(txturl.getText().toString(),imagePath);
+            preview(imagePath);
+        }
+        else {
+            Toast.makeText(this,"External storage permission is not granted",Toast.LENGTH_SHORT).show();
         }
     }
 
-    private class DownloadTask extends AsyncTask<String, Integer, Bitmap> {
-        ProgressDialog progressDialog;
+    private void preview(String imagePath) {
+        Bitmap image = BitmapFactory.decodeFile(imagePath);
+        float imageWith = image.getWidth();
+        float imageHeight = image.getHeight();
+        int rescaledWith = 480;
+        int rescaledHeight = (int) ((imageHeight* rescaledWith) / imageWith);
+        Bitmap bitmap = Bitmap.createScaledBitmap(image,rescaledWith, rescaledHeight,false);
+        imageView.setImageBitmap(bitmap);
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
-            progressDialog.setMax(100);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-            progressDialog.setTitle("Downloading");
-            progressDialog.setMessage("Please wait...");
-            progressDialog.setIndeterminate(false);
-            progressDialog.show();
+    }
+
+    private void downloadFile(String url,String imagePath){
+        try {
+            URL strurl = new URL(url);
+            URLConnection connection = strurl.openConnection();
+            connection.connect();
+
+            InputStream inputStream = new BufferedInputStream(strurl.openStream(), 8192);
+            OutputStream outputStream = new FileOutputStream(imagePath);
+
+            byte data[] = new byte[1024];
+            int count;
+            while ((count = inputStream.read(data))!= -1){
+                outputStream.write(data,0,count);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-            String fileName = "downloaded_image.jpg";
-            String imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString()
-                    + "/" + fileName;
+        class DownloadTask extends AsyncTask<String, Integer, Bitmap> {
+            @Override
+            protected Bitmap doInBackground(String... urls) {
+                try {
+                    // Dosya yolu
+                    String fileName = "temp.jpg";
+                    String imagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).toString() + "/" + fileName;
 
-            try {
-                URL url = new URL(urls[0]);
-                URLConnection connection = url.openConnection();
-                connection.connect();
+                    // Dosyayı indirin
+                    downloadFile(urls[0], imagePath);
 
-                int fileLength = connection.getContentLength();
-                InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = new FileOutputStream(imagePath);
+                    // Bitmap'i yükleyin
+                    Bitmap image = BitmapFactory.decodeFile(imagePath);
 
-                byte[] data = new byte[1024];
-                long total = 0;
-                int count;
+                    // Resmi yeniden boyutlandırın
+                    float imageWidth = image.getWidth();
+                    float imageHeight = image.getHeight();
+                    int rescaledWidth = 480;
+                    int rescaledHeight = (int) ((imageHeight * rescaledWidth) / imageWidth);
 
-                while ((count = input.read(data)) != -1) {
-                    total += count;
-                    output.write(data, 0, count);
-                    publishProgress((int) ((total * 100) / fileLength));
+                    return Bitmap.createScaledBitmap(image, rescaledWidth, rescaledHeight, false);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
                 }
-
-                output.flush();
-                output.close();
-                input.close();
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-            return BitmapFactory.decodeFile(imagePath);
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            progressDialog.setProgress(progress[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap result) {
-            progressDialog.dismiss();
-            if (result != null) {
-                imgView.setImageBitmap(result);
-                Toast.makeText(MainActivity.this, "Download complete!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MainActivity.this, "Failed to download image", Toast.LENGTH_SHORT).show();
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                if (bitmap != null) {
+                    // Görseli göster
+                    imageView.setImageBitmap(bitmap);
+                } else {
+                    Toast.makeText(MainActivity.this, "Image loading failed", Toast.LENGTH_SHORT).show();
+                }
             }
         }
+
     }
 }
