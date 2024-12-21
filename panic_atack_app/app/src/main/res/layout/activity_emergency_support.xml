@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <!-- Sol Taraftaki Mavi Buton -->
+    <Button
+        android:id="@+id/btn_478_technique"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#1976D2"
+        android:text="4-7-8 Technique"
+        android:textColor="#FFFFFF"
+        android:textSize="18sp"
+        android:gravity="center" />
+
+    <!-- Sağ Taraftaki Beyaz Buton -->
+    <Button
+        android:id="@+id/btn_visual_audio_guide"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#FFFFFF"
+        android:text="Visual/Audio Guide Screen"
+        android:textColor="#000000"
+        android:textSize="18sp"
+        android:gravity="center" />
+
+</LinearLayout>
