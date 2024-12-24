@@ -1,10 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AnxietyTracker">
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Başlık -->
+    <TextView
+        android:id="@+id/tv_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DAILY ANXIETY TRACKER"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Checklist -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/cb_rapid_heartbeat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rapid heartbeat" />
+
+            <CheckBox
+                android:id="@+id/cb_shortness_breath"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shortness of breath" />
+
+            <CheckBox
+                android:id="@+id/cb_trembling_shaking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tremblings or shaking" />
+
+            <CheckBox
+                android:id="@+id/cb_dizziness"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dizziness or lightheadedness" />
+
+            <CheckBox
+                android:id="@+id/cb_chest_pain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chest pain or discomfort" />
+
+            <CheckBox
+                android:id="@+id/cb_difficulty_concentrating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Difficulty concentrating" />
+
+            <CheckBox
+                android:id="@+id/cb_nausea"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nausea or stomach upset" />
+
+            <CheckBox
+                android:id="@+id/cb_excessive_worry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Excessive worry or fear" />
+
+            <CheckBox
+                android:id="@+id/cb_impending_doom"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Feeling a sense of impending doom" />
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Grafikler -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="16dp" />
+
+    <!-- Alt Yazılar (Günler) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Monday"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tuesday"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Thursday"
+            android:textSize="14sp"
+            android:gravity="center" />
+    </LinearLayout>
+</LinearLayout>

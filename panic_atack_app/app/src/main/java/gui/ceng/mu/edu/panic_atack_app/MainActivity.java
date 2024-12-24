@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         trackerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "Anxiety Tracker Açılıyor...", Toast.LENGTH_SHORT).show();
-                // Buraya anxiety tracker sayfasına geçiş kodu eklenebilir
+                Intent intent = new Intent(MainActivity.this, AnxietyTracker.class);
+                startActivity(intent);
             }
         });
 
